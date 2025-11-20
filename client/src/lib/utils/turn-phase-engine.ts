@@ -75,6 +75,18 @@ export function executeDrawPhase(
   const cardsAffected: GameCard[] = []
 
   const currentPlayer = gameState.players[turnState.currentPlayerIndex]
+  // 先行1ターン目はドロースキップ (要件定義 4.2)
+  if (gameState.turnCount === 1 && gameState.currentPlayerIndex === 0) {
+      messages.push("先行1ターン目のためドローなし");
+      return {
+          success: true,
+          phase: "draw" as TurnPhase,
+          nextPhase: "main" as TurnPhase,
+          messages,
+          cardsAffected: [],
+          errors: [],
+      }
+  }
 
   // デッキからカードをドロー
   const playerDeckCards = allCards.filter((card) => card.owner === currentPlayer.id && card.zone === "in-deck")
