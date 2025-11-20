@@ -1,0 +1,110 @@
+@import "tailwindcss";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* ダークテーマ基調 */
+  --background: hsl(240 10% 8%);
+  --foreground: hsl(0 0% 95%);
+  --card: hsl(240 10% 12%);
+  --card-foreground: hsl(0 0% 95%);
+
+  /* ゲーム固有の色 */
+  --primary: hsl(200 90% 50%);
+  --primary-foreground: hsl(240 10% 8%);
+  --secondary: hsl(280 80% 55%);
+  --secondary-foreground: hsl(240 10% 8%);
+
+  /* ステータス色 */
+  --accent: hsl(40 100% 50%);
+  --accent-foreground: hsl(240 10% 8%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --success: hsl(120 80% 50%);
+
+  /* UI要素 */
+  --muted: hsl(240 5% 25%);
+  --muted-foreground: hsl(0 0% 70%);
+  --border: hsl(240 5% 20%);
+  --input: hsl(240 5% 18%);
+  --ring: hsl(200 90% 50%);
+
+  /* その他 */
+  --popover: hsl(240 10% 12%);
+  --popover-foreground: hsl(0 0% 95%);
+  --chart-1: hsl(200 90% 50%);
+  --chart-2: hsl(280 80% 55%);
+  --chart-3: hsl(40 100% 50%);
+  --chart-4: hsl(0 84.2% 60.2%);
+  --chart-5: hsl(120 80% 50%);
+  --radius: 0.6rem;
+}
+
+.dark {
+  --background: hsl(240 10% 8%);
+  --foreground: hsl(0 0% 95%);
+  --card: hsl(240 10% 12%);
+  --card-foreground: hsl(0 0% 95%);
+  --primary: hsl(200 90% 50%);
+  --primary-foreground: hsl(240 10% 8%);
+  --secondary: hsl(280 80% 55%);
+  --secondary-foreground: hsl(240 10% 8%);
+  --accent: hsl(40 100% 50%);
+  --accent-foreground: hsl(240 10% 8%);
+  --destructive: hsl(0 84.2% 60.2%);
+  --destructive-foreground: hsl(0 0% 98%);
+  --success: hsl(120 80% 50%);
+  --muted: hsl(240 5% 25%);
+  --muted-foreground: hsl(0 0% 70%);
+  --border: hsl(240 5% 20%);
+  --input: hsl(240 5% 18%);
+  --ring: hsl(200 90% 50%);
+}
+
+@theme inline {
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  /* ゲーム画面用グローバルスタイル */
+  .game-board {
+    @apply min-h-screen bg-gradient-to-b from-background to-background/95;
+  }
+
+  .zone-container {
+    @apply rounded-lg border border-border bg-card/50 p-4;
+  }
+}
