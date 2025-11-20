@@ -1,28 +1,23 @@
+import type { GameCard } from "./card"
+
 /**
  * カードタイプ
  */
-export type CardRarity = "common" | "uncommon" | "rare" | "super-rare"
+export type GameCardRarity = "common" | "uncommon" | "rare" | "super-rare"
 
-export interface Card {
-  id: string
-  name: string
-  cost: number // マナコスト
-  power: number // パワー
-  rarity: CardRarity
-  type: "creature" | "spell" | "fortress"
-  description: string
-}
+
+
 
 /**
  * プレイヤーの各ゾーン
  */
 export interface PlayerZones {
-  hand: Card[] // 手札
-  deck: Card[] // デッキ
-  graveyard: Card[] // 墓地
-  manaZone: Card[] // マナゾーン
-  battleZone: Card[] // バトルゾーン
-  shieldZone: Card[] // シールドゾーン（最大4枚）
+  hand: GameCard[] // 手札
+  deck: GameCard[] // デッキ
+  graveyard: GameCard[] // 墓地
+  manaZone: GameCard[] // マナゾーン
+  battleZone: GameCard[] // バトルゾーン
+  shieldZone: GameCard[] // シールドゾーン（最大4枚）
 }
 
 /**
@@ -70,7 +65,7 @@ export interface GameState {
  */
 export interface GameAction {
   id: string
-  type: "play-card" | "attack" | "shield-trigger"
+  type: "play-GameCard" | "attack" | "shield-trigger"
   playerId: string
   data: Record<string, any>
   timestamp: number
@@ -81,7 +76,7 @@ export interface GameAction {
  */
 export interface ManaCost {
   amount: number
-  paymentCards: Card[]
+  paymentGameCards: GameCard[]
   isValid: boolean
   errorMessage?: string
 }

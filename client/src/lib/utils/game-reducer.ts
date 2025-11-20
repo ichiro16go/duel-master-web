@@ -1,5 +1,8 @@
-import type { GameState, PlayerState, Card } from "$lib/types/game"
+import type { GameState, PlayerState } from "$lib/types/game"
+import type { GameCard as Card} from "$lib/types/card"
 import { GAME_CONSTANTS } from "$lib/utils/game-constants"
+import { TEST_CARDS } from "$lib/data/test-cards"
+import { createCardInstance } from "$lib/utils/card-manager"
 
 /**
  * ゲーム状態を初期化
@@ -107,19 +110,22 @@ export function spendMana(gameState: GameState, amount: number): GameState {
 /**
  * ゲーム終了状態を判定
  */
+/**
+ * ゲーム終了状態を判定（シールド切れ or デッキ切れ）
+ */
 export function checkGameEnd(gameState: GameState): { isEnded: boolean; winner: 0 | 1 | null } {
   const [player1, player2] = gameState.players
 
-  if (player1.shields >= GAME_CONSTANTS.DEFEAT_SHIELD_DESTROYED) {
-    return { isEnded: true, winner: 1 }
-  }
-  if (player2.shields >= GAME_CONSTANTS.DEFEAT_SHIELD_DESTROYED) {
-    return { isEnded: true, winner: 0 }
-  }
+  // シールド切れによる敗北判定
+  if (player1.shields < 0) return { isEnded: true, winner: 1 } // player1敗北
+  if (player2.shields < 0) return { isEnded: true, winner: 0 } // player2敗北
 
+  // デッキ切れ（ライブラリアウト）による敗北判定
+  // 注意: 正確には「引こうとした時」に負けだが、ここでは簡易的に判定
+  // 厳密な判定は executeDrawPhase の結果を受け取る必要がある
+  
   return { isEnded: false, winner: null }
 }
-
 /**
  * 敗北条件をチェックしてゲーム状態を更新
  */
@@ -135,6 +141,24 @@ export function updateGameEndState(gameState: GameState): GameState {
   }
 
   return gameState
+}
+
+/**
+ * テスト用デッキを生成する
+ */
+function createTestDeck(ownerId: string): Card[] {
+  const deck: Card[] = [];
+  // 40枚になるまでテストカードをランダムに追加
+  for (let i = 0; i < GAME_CONSTANTS.DECK_SIZE; i++) {
+    const template = TEST_CARDS[i % TEST_CARDS.length];
+    const instanceId = `${ownerId}_card_${i}_${Date.now()}`;
+    // createCardInstanceを使って完全なGameCardオブジェクトを生成
+    const card = createCardInstance(template, ownerId, instanceId, 0);
+    // 初期状態はデッキ
+    card.zone = "in-deck";
+    deck.push(card);
+  }
+  return shuffleDeck(deck);
 }
 
 // ユーティリティ関数
@@ -162,9 +186,29 @@ function generateGameId(): string {
  * ゲーム初期化ラッパー関数
  */
 export function initializeGame(): GameState {
-  const player1 = createInitialPlayerState("player-1", "プレイヤー1", [])
-  const player2 = createInitialPlayerState("player-2", "プレイヤー2", [])
-  return initializeGameState(player1, player2)
+  // テストデッキを使用してプレイヤーを作成
+  const deck1 = createTestDeck("player-1");
+  const deck2 = createTestDeck("player-2");
+  
+  const player1 = createInitialPlayerState("player-1", "プレイヤー1", deck1);
+  const player2 = createInitialPlayerState("player-2", "プレイヤー2", deck2);
+  
+  // シールドのセットアップ（デッキの上から5枚をシールドにする）
+  setupShields(player1);
+  setupShields(player2);
+
+  return initializeGameState(player1, player2);
+}
+
+function setupShields(player: PlayerState) {
+    for(let i = 0; i < GAME_CONSTANTS.MAX_SHIELDS + 1; i++) { // 初期シールド5枚
+        const card = player.zones.deck.pop();
+        if (card) {
+            card.zone = "in-shield-zone";
+            player.zones.shieldZone.push(card);
+            player.shields++;
+        }
+    }
 }
 
 /**
@@ -173,3 +217,4 @@ export function initializeGame(): GameState {
 export function transitionPhase(gameState: GameState): GameState {
   return advanceTurnPhase(gameState)
 }
+
